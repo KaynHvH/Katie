@@ -14,11 +14,13 @@ use std::io; // I didn't feel like inputting as before, because my head hurt alr
 // use std::num::sqrt; // For sqrt numbers in calculator
 
 // Reading input
-fn input(input: &mut String) {
+fn input() -> String {
+    let mut input = String::new();
     stdout().flush()
         .expect("failed to flush");
-    stdin().read_line(input)
+    stdin().read_line(&mut input)
         .expect("failed to read");
+    input
 }
 
 fn run_notepad() -> Vec<u8> {
@@ -84,8 +86,8 @@ fn date_t() -> String {
     let year: u32 = actually_date.year() as u32; // Year is in i32 so i must convert that to u32
     let month = actually_date.month();
     let day = actually_date.day();
-    let result = year + month + day;
-    return format!("{}.{}.{}", year, month, day);
+    // let result = year + month + day;  // idk why is used
+    format!("{}.{}.{}", year, month, day)
 }
 
 pub fn add_letters() -> String {
@@ -102,11 +104,12 @@ pub fn add_letters() -> String {
         .expect("failed to parse");
 
 
-    for random_letters in 0..letters_len.trim().parse::<u32>().unwrap() {
+    for _  in 0..letters_len.trim().parse::<u32>().unwrap() {
         let letter: char = rng.gen_range('A'..='z');
         print!("{}", letter);
         ret.push(letter);
     }
+
     println!();
     ret
 }
@@ -115,7 +118,7 @@ pub fn add_numbers() -> String {
     println!();
     let mut rng = rand::thread_rng();
     let mut numbers_len = String::new();
-    let mut ret = String::new();
+    let mut  ret = String::new();
 
     println!("Type length of numbers in password");
     println!();
@@ -125,7 +128,7 @@ pub fn add_numbers() -> String {
         .expect("failed to parse");
 
 
-    for random_numbers in 0..numbers_len.trim().parse::<u32>().unwrap() {
+    for _ in 0..numbers_len.trim().parse::<u32>().unwrap() {
         let number: char = rng.gen_range('0'..='9');
         print!("{}", number);
         ret.push(number);
@@ -148,7 +151,7 @@ fn add_special_char() -> String {
         .expect("failed to parse");
 
 
-    for random_special_chars in 0..special_char_len.trim().parse::<u32>().unwrap() {
+    for _ in 0..special_char_len.trim().parse::<u32>().unwrap() {
         let special_char: char = rng.gen_range('!'..='#');
         print!("{}", special_char);
         ret.push(special_char);
@@ -171,11 +174,9 @@ fn main() {
     loop {
         println!();
 
-        let mut help = String::new();
-        let for_moment = input(&mut help);
-        let help_trimmed = help.trim();
 
-        match help_trimmed {
+
+        match input().trim() {
             // Help command
             "help" => { println!("{}", "
                 1. help -> Displays all commands in Katie. \n
@@ -192,23 +193,24 @@ fn main() {
                 1. run notepad -> Will open notepad. \n
                 2. run paint -> Will open paint. \n
                 3. run cmd -> Will open cmd \n".green());
-                },
+            },
 
             // Exit statement
             "exit" => {
                 let mut time_to_exit = 5; // Variable for exit program in 5 second. Not immediately, cuz it would look weird.
 
-                while(time_to_exit > -1) {
+                while time_to_exit > 0 {
                     println!("Program exit in {} seconds", time_to_exit);
 
-                    time_to_exit = time_to_exit - 1;
+                    time_to_exit -= 1;
                     thread::sleep(time::Duration::from_millis(1000)); // Sleep for 1 second.
 
-                    if(time_to_exit == 0) {
-                        println!("{}", "Goodbye user!".red().bold());
-                        std::process::exit(0);
+                    if time_to_exit == 0 {
+
                     }
                 }
+                println!("{}", "Goodbye user!".red().bold());
+                std::process::exit(0);
             },
 
             // --------------------------------
@@ -245,44 +247,36 @@ fn main() {
 
             "password" => {
                 println!();
-                println!("You'r generate password: {}{}{}", add_letters(), add_numbers(), add_special_char());
+                println!("Your generate password: {}{}{}", add_letters(), add_numbers(), add_special_char());
             },
 
             "calculator" => {
                 println!("Enter first number");
 
-                let mut firstNumber = String::new();
-                let firstNumber_before_trim = input(&mut firstNumber);
-                let firstNumber_trimmed = firstNumber.trim();
+                let first_number_trimmed: i32 = input().trim().parse().unwrap();
+
+
                 println!("Enter second number");
 
-                let mut secondNumber = String::new();
-                let secondNumber_before_trim = input(&mut secondNumber);
-                let secondNumber_trimmed = secondNumber.trim();
 
-                let firstNumber_trimmed: i32 = firstNumber_trimmed.parse().unwrap();
-                let secondNumber_trimmed: i32 = secondNumber_trimmed.parse().unwrap();
 
-                let adding_result = firstNumber_trimmed + secondNumber_trimmed;
-                println!("{} + {} = {}", firstNumber_trimmed, secondNumber_trimmed, adding_result);
 
-                let subtracting_result = firstNumber_trimmed - secondNumber_trimmed;
-                println!("{} - {} = {}", firstNumber_trimmed, secondNumber_trimmed, subtracting_result);
 
-                let multiplicating_result = firstNumber_trimmed * secondNumber_trimmed;
-                println!("{} * {} = {}", firstNumber_trimmed, secondNumber_trimmed, multiplicating_result);
+                let second_number_trimmed: i32 = input().trim().parse().unwrap();
 
-                let divising_result = firstNumber_trimmed / secondNumber_trimmed;
-                println!("{} / {} = {}", firstNumber_trimmed, secondNumber_trimmed, divising_result);
+                println!("{} + {} = {}", first_number_trimmed, second_number_trimmed, (first_number_trimmed + second_number_trimmed));
 
-                let test_result = firstNumber_trimmed ^ secondNumber_trimmed;
-                println!("{} ^ {} = {}", firstNumber_trimmed, secondNumber_trimmed, test_result);
+                println!("{} - {} = {}", first_number_trimmed, second_number_trimmed, (first_number_trimmed - second_number_trimmed));
 
-                let upperLimit_result1: u64 = (firstNumber_trimmed * firstNumber_trimmed) as u64;
-                let upperLimit_result2: u64 = (secondNumber_trimmed * secondNumber_trimmed) as u64;
+                println!("{} * {} = {}", first_number_trimmed, second_number_trimmed, (first_number_trimmed * second_number_trimmed));
 
-                println!("First number to square: {}", upperLimit_result1);
-                println!("Second number to square: {}", upperLimit_result2);
+                println!("{} / {} = {}", first_number_trimmed, second_number_trimmed, (first_number_trimmed / second_number_trimmed));
+
+                println!("{} ^ {} = {}", first_number_trimmed, second_number_trimmed, (first_number_trimmed ^ second_number_trimmed));
+
+
+                println!("First number to square: {}", (first_number_trimmed * first_number_trimmed));
+                println!("Second number to square: {}", (second_number_trimmed * second_number_trimmed));
             }
 
             // Error statement
